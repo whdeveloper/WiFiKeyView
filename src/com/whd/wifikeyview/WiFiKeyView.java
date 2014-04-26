@@ -16,6 +16,7 @@ package com.whd.wifikeyview;
  * limitations under the License.
  */
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import com.possebom.openwifipasswordrecover.interfaces.NetworkListener;
@@ -30,7 +31,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -41,6 +41,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
@@ -64,7 +65,7 @@ public class WiFiKeyView implements IXposedHookLoadPackage {
 	
 	// Debugging
 	private static final String  TAG = "WHD - WiFiKeyView";
-	private static final boolean DBG = false;
+	private static final boolean DBG = true;
 	
 	// Context menu id's
 	private static int MENU_ID_MODIFY       = Menu.FIRST + 8;
@@ -134,7 +135,7 @@ public class WiFiKeyView implements IXposedHookLoadPackage {
 					final String ssid = pref.getTitle().toString();
 					
 					// When debugging, show we clicked the item, and the ssid
-					if (DBG) Log.v(TAG, "MENU_ID_SHOWPASSWORD clicked!! SSID: " + ssid);
+					if (DBG) XposedBridge.log(TAG + "|| MENU_ID_SHOWPASSWORD clicked!! SSID: " + ssid);
 					
 					// Run the Task, this will check all entries in WPA_SUPPLICANT file
 					new NetworkParser(new NetworkListener() {
@@ -147,8 +148,8 @@ public class WiFiKeyView implements IXposedHookLoadPackage {
 								
 								// Log all networks if we are debugging
 								if (DBG) {
-									Log.v(TAG, "SSID: " + network.getSsid());
-									Log.v(TAG, "PASS: " + network.getPassword());
+									XposedBridge.log(TAG + "|| SSID: " + network.getSsid());
+									XposedBridge.log(TAG + "|| PASS: " + network.getPassword());
 								}
 								
 								// If we found the network with the same ssid
@@ -177,17 +178,28 @@ public class WiFiKeyView implements IXposedHookLoadPackage {
 	private void setIds(Class<?> SettingsClazz) {
 		// Search the id for modify, and create it for password
 		try {
-			MENU_ID_MODIFY = XposedHelpers.getIntField(SettingsClazz, "MENU_ID_MODIFY");
+			Field modify = SettingsClazz.getDeclaredField("MENU_ID_MODIFY");
+			modify.setAccessible(true);
+			
+			MENU_ID_MODIFY = modify.getInt(null);
 			MENU_ID_SHOWPASSWORD = MENU_ID_MODIFY+1;
 		} catch (Exception e) {
 			// The field MENU_ID_MODIFY was not found, ignore
 			// Android 2.1 and below
 			try {
-				MENU_ID_MODIFY = XposedHelpers.getIntField(SettingsClazz, "CONTEXT_MENU_ID_CHANGE_PASSWORD");
+				Field modify = SettingsClazz.getDeclaredField("CONTEXT_MENU_ID_CHANGE_PASSWORD");
+				modify.setAccessible(true);
+			
+				MENU_ID_MODIFY = modify.getInt(null);
 				MENU_ID_SHOWPASSWORD = MENU_ID_MODIFY+1;
 			} catch (Exception e1) {
 				// The field CONTEXT_MENU_ID_CHANGE_PASSWORD was not found, ignore and use default
 			}
+		}
+		
+		if (DBG) {
+			XposedBridge.log(TAG + "|| MENU_ID_MODIFY" + MENU_ID_MODIFY);
+			XposedBridge.log(TAG + "|| MENU_ID_SHOWPASSWORD" + MENU_ID_SHOWPASSWORD);
 		}
 	}
 	
