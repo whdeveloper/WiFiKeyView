@@ -66,19 +66,24 @@ public class NetworkParser extends AsyncTask<Void, Void, List<Network>> {
             final Pattern patternNetworks = Pattern.compile("network=\\{(.*?)\\}", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
             final Pattern patternWpa = Pattern.compile("ssid=\"(.*?)\".*psk=\"(.*?)\"", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
             final Pattern patternWep = Pattern.compile("ssid=\"(.*?)\".*wep_key.=\"(.*?)\"", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
-
+            final Pattern patternOpen = Pattern.compile("ssid=\"(.*?)\".*key_mgmt.=\"NONE\"", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+            
             final Matcher matcherNetworks = patternNetworks.matcher(sb.toString());
 
             while (matcherNetworks.find()) {
                 final String stringNetwork = matcherNetworks.group(1);
-                final Matcher matcherWpa = patternWpa.matcher(stringNetwork);
-                final Matcher matcherWep = patternWep.matcher(stringNetwork);
+                final Matcher matcherWpa  = patternWpa .matcher(stringNetwork);
+                final Matcher matcherWep  = patternWep .matcher(stringNetwork);
+                final Matcher matcherOpen = patternOpen.matcher(stringNetwork);
 
                 if (matcherWpa.find() && matcherWpa.groupCount() == 2) {
                     final Network network = new Network(matcherWpa.group(1), matcherWpa.group(2), "wpa");
                     listNetworks.add(network);
                 } else if (matcherWep.find() && matcherWep.groupCount() == 2) {
                     final Network network = new Network(matcherWep.group(1), matcherWep.group(2), "wep");
+                    listNetworks.add(network);
+                } else if (matcherOpen.find() && matcherOpen.groupCount() == 1) {
+                	final Network network = new Network(matcherOpen.group(1), "", "open");
                     listNetworks.add(network);
                 }
             }
