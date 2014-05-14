@@ -16,7 +16,6 @@ package com.whd.wifikeyview;
  * limitations under the License.
  */
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import com.possebom.openwifipasswordrecover.interfaces.NetworkListener;
@@ -24,13 +23,13 @@ import com.possebom.openwifipasswordrecover.model.Network;
 import com.possebom.openwifipasswordrecover.parser.NetworkParser;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -61,23 +60,26 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
  *  
  *  The code from the other projects are still in original state, and haven't been changed.
  */
-public class WiFiKeyView implements IXposedHookLoadPackage {
+public class WiFiKeyView implements IXposedHookLoadPackage  {
 	
 	// Debugging
-	private static final String  TAG = "WHD - WiFiKeyView";
-	private static final boolean DBG = true;
+	private static final String  TAG          = "WHD - WiFiKeyView || ";
+	private static final boolean DBG          = true;
+	private static final boolean DBGSensitive = false;
 	
 	// Context menu id's
-	private static int MENU_ID_MODIFY       = Menu.FIRST + 8;
-	private static int MENU_ID_SHOWPASSWORD = Menu.FIRST + 9;
+	private static int MENU_ID_SHOWPASSWORD = 999;
 	
+	// What to hook
+	private static final String PACKAGE_SETTINGS   = "com.android.settings";
+	private static final String CLASS_WIFISETTINGS = "com.android.settings.wifi.WifiSettings";
 	
 	@Override
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
-		if (!lpparam.packageName.equals("com.android.settings")) return; // Settings package
+		if (!lpparam.packageName.equals(PACKAGE_SETTINGS)) return; // Settings package
 		
 		// Reference to the class we want to hook
-		final Class<?> SettingsClazz = XposedHelpers.findClass("com.android.settings.wifi.WifiSettings", lpparam.classLoader);
+		final Class<?> SettingsClazz = XposedHelpers.findClass(CLASS_WIFISETTINGS, lpparam.classLoader);
 		
 		// Hook com.android.settings.wifi.WifiSettings#onCreateContextMenu(ContextMenu, View, ContextMenuInfo)
 		// If the network is known, and the modify is showing
@@ -85,13 +87,13 @@ public class WiFiKeyView implements IXposedHookLoadPackage {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 				
-				// Be sure we have the right id's
-				setIds(SettingsClazz);
-				
-				// If the MenuItem for modify is found, add show password
-				if ( ((ContextMenu)param.args[0]).findItem(MENU_ID_MODIFY) != null) {
-					((ContextMenu) param.args[0]).add(Menu.NONE, Menu.FIRST + 9, 3, "Show password");
+				// If the context menu has all options added (or not the connect)
+				int size = ((ContextMenu)param.args[0]).size(); 
+				if ( (size == 2) || (size == 3) ) {
+					((ContextMenu) param.args[0]).add(Menu.NONE, MENU_ID_SHOWPASSWORD, 3, "Show password");
+					log("Show password added to Context menu.");
 				}
+				
 			}
 		});
 		
@@ -102,23 +104,34 @@ public class WiFiKeyView implements IXposedHookLoadPackage {
 			protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
 				MenuItem menuItem = (MenuItem) param.args[0];
 				
-				// Be sure we have the right id's
-				setIds(SettingsClazz);
-				
 				// We only want to do something on our own menu item
 				if ( menuItem.getItemId() == MENU_ID_SHOWPASSWORD) {
 					
-					// Context for the Dialog
-					final Context context = (Context) ((PreferenceFragment) param.thisObject).getActivity();
+					// Output the class of the object
+					if (DBG) {
+						Object   objectWifiSettings = param.thisObject;
+						Class<?> classWifiSettings  = objectWifiSettings.getClass();
+						while (classWifiSettings.getSuperclass() != null) {
+							log("WiFiSettings subclass: " + classWifiSettings.getCanonicalName());
+							classWifiSettings = classWifiSettings.getSuperclass();
+						}
+					}
 					
 					// The selected position in the network list
 					int selectedListPosition = ((AdapterContextMenuInfo) menuItem.getMenuInfo()).position; 
 					
+					if (!(param.thisObject instanceof Fragment)) {
+						throw new RuntimeException("param.thisObject is not an instance of Fragment");
+					}
+					
 					// Get an reference to the preference fragment
-					PreferenceFragment wifiPreferenceFragment = ((PreferenceFragment)param.thisObject);
+					Fragment wifiFragment = ((Fragment)param.thisObject);
+					
+					// Context for the Dialog
+					Context context = (Context) wifiFragment.getActivity();
 					
 					// Search the ListView
-					View rawListView = wifiPreferenceFragment.getView().findViewById(android.R.id.list);
+					View rawListView = wifiFragment.getView().findViewById(android.R.id.list);
 					
 					// Be sure it is an ListView, and not something else using id 'android.R.id.list'
 					if (!(rawListView instanceof ListView)) {
@@ -129,44 +142,24 @@ public class WiFiKeyView implements IXposedHookLoadPackage {
 					ListView mList = (ListView) rawListView;
 					
 					// Get the selected ListView item through the adapter
-					Preference pref = (Preference) mList.getAdapter().getItem(selectedListPosition);
+					Object object = mList.getAdapter().getItem(selectedListPosition);
+					if (DBG) {
+						Class<?> classObject = object.getClass();
+						while (classObject.getSuperclass() != null) {
+							log("ListView item subclass: " + classObject.getCanonicalName());
+							classObject = classObject.getSuperclass();
+						}
+					}
+					Preference pref = (Preference) object;
 					
 					// Get the ssid (title) of the preference
-					final String ssid = pref.getTitle().toString();
+					String ssid = pref.getTitle().toString();
 					
 					// When debugging, show we clicked the item, and the ssid
-					if (DBG) XposedBridge.log(TAG + "|| MENU_ID_SHOWPASSWORD clicked!! SSID: " + ssid);
+					if (DBG) log("MENU_ID_SHOWPASSWORD clicked!! SSID: " + ssid);
 					
 					// Run the Task, this will check all entries in WPA_SUPPLICANT file
-					new NetworkParser(new NetworkListener() {
-						
-						@Override
-						public void onParserDone(List<Network> networkList) {
-							
-							// Run through all found networks
-							for (Network network : networkList) {
-								
-								// Log all networks if we are debugging
-								if (DBG) {
-									XposedBridge.log(TAG + "|| SSID: " + network.getSsid());
-									XposedBridge.log(TAG + "|| PASS: " + network.getPassword());
-								}
-								
-								// If we found the network with the same ssid
-								if (network.getSsid().equals(ssid)) {
-									
-									// Show the password in a Dialog
-									getDialog(context, ssid, network.getPassword()).show();
-									
-									// Because we found what we wanted, we stop searching
-									break;
-								}
-								
-				            }
-							
-						}
-						
-					}).execute();
+					new NetworkParser(new WiFiNetworkListener(context, ssid)).execute();
 					
 					// Set result to true
 					param.setResult(true);
@@ -175,84 +168,127 @@ public class WiFiKeyView implements IXposedHookLoadPackage {
 		});
     }
 	
-	private void setIds(Class<?> SettingsClazz) {
-		// Search the id for modify, and create it for password
-		try {
-			Field modify = SettingsClazz.getDeclaredField("MENU_ID_MODIFY");
-			modify.setAccessible(true);
-			
-			MENU_ID_MODIFY = modify.getInt(null);
-			MENU_ID_SHOWPASSWORD = MENU_ID_MODIFY+1;
-		} catch (Exception e) {
-			// The field MENU_ID_MODIFY was not found, ignore
-			// Android 2.1 and below
-			try {
-				Field modify = SettingsClazz.getDeclaredField("CONTEXT_MENU_ID_CHANGE_PASSWORD");
-				modify.setAccessible(true);
-			
-				MENU_ID_MODIFY = modify.getInt(null);
-				MENU_ID_SHOWPASSWORD = MENU_ID_MODIFY+1;
-			} catch (Exception e1) {
-				// The field CONTEXT_MENU_ID_CHANGE_PASSWORD was not found, ignore and use default
-			}
-		}
-		
-		if (DBG) {
-			XposedBridge.log(TAG + "|| MENU_ID_MODIFY" + MENU_ID_MODIFY);
-			XposedBridge.log(TAG + "|| MENU_ID_SHOWPASSWORD" + MENU_ID_SHOWPASSWORD);
-		}
+	private void log(String msg) {
+		XposedBridge.log(TAG + msg);
 	}
 	
-	private AlertDialog getDialog(final Context context, final String ssid, final String password) {
+	private AlertDialog getDialog(Context context, String ssid, String password) {
 		AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 		
 		// Set the title and message
 		dialog.setTitle(ssid);
-		dialog.setMessage("Password: " + password);
+		dialog.setMessage((password.equals("")) ? ("Network has no password."): ("Password: " + password));
 		
 		// Make it cancelable
 		dialog.setCancelable(true);
 		
 		// Positive button is for copy to clipboard
-		dialog.setPositiveButton("Copy", new OnClickListener() {
-			@SuppressWarnings("deprecation") // Support all versions of android
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				
-				// Get reference to the clipboardmanager, we do not know what version we have
-				Object clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE);
-				
-				// If it is an instance of the ClipboardManager in content package, cast it
-				if (clipboardManager instanceof android.content.ClipboardManager) {
-					((android.content.ClipboardManager) clipboardManager).setPrimaryClip(ClipData.newPlainText("ssid", password));
-				
-				// Otherwise it is the one in text package
-				} else {
-					((android.text.ClipboardManager) clipboardManager).setText(password);
-				}
-				
-				// Visual feedback
-				Toast.makeText(context, "Password copied to clipboard", Toast.LENGTH_SHORT).show();
-			}
-		});
+		dialog.setPositiveButton("Copy", new CopyClickListener(context, password));
 		
 		// Negative buttons is for sharing
-		dialog.setNegativeButton("Share", new OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				
-				// Create intent for sharing and set data
-				Intent share = new Intent();
-				share.setAction(Intent.ACTION_SEND);
-				share.putExtra(Intent.EXTRA_TEXT, "SSID: " + ssid + ", Password: " + password);
-				share.setType("text/plain");
-				
-				// Send the intent
-				context.startActivity(Intent.createChooser(share, "Share password to.."));
-			}
-		});
+		dialog.setNegativeButton("Share", new ShareClickListener(context, ssid, password));
 		
 		// Create and return the dialog
 		return dialog.create();
+	}
+	
+	private class CopyClickListener implements OnClickListener {
+		
+		private Context context;
+		private String  password;
+		
+		public CopyClickListener(Context context, String password) {
+			this.context  = context;
+			this.password = password;
+		}
+		
+		@SuppressWarnings("deprecation") // Support all versions of android
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			
+			// Get reference to the clipboardmanager, we do not know what version we have
+			Object clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE);
+			
+			// If it is an instance of the ClipboardManager in content package, cast it
+			if (clipboardManager instanceof android.content.ClipboardManager) {
+				((android.content.ClipboardManager) clipboardManager).setPrimaryClip(ClipData.newPlainText("ssid", password));
+			
+			// Otherwise it is the one in text package
+			} else {
+				((android.text.ClipboardManager) clipboardManager).setText(password);
+			}
+			
+			// Visual feedback
+			Toast.makeText(context, "Password copied to clipboard", Toast.LENGTH_SHORT).show();
+		}
+		
+	}
+	
+	private class ShareClickListener implements OnClickListener {
+		
+		private Context context;
+		private String  ssid;
+		private String  password;
+		
+		public ShareClickListener(Context context, String ssid, String password) {
+			this.context  = context;
+			this.ssid     = ssid;
+			this.password = password;
+		}
+		
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			
+			// Create intent for sharing and set data
+			Intent share = new Intent();
+			share.setAction(Intent.ACTION_SEND);
+			share.putExtra(Intent.EXTRA_TEXT, "SSID: " + ssid + ", Password: " + password);
+			share.setType("text/plain");
+			
+			// Send the intent
+			context.startActivity(Intent.createChooser(share, "Share password to.."));
+		}
+		
+	}
+	
+	private class WiFiNetworkListener implements NetworkListener {
+		
+		private Context context;
+		private String  ssid;
+		
+		public WiFiNetworkListener(Context context, String ssid) {
+			this.context = context;
+			this.ssid    = ssid;
+		}
+		
+		@Override
+		public void onParserDone(List<Network> networkList) {
+			
+			// Run through all found networks
+			for (Network network : networkList) {
+				
+				// Log all networks if we are debugging
+				if (DBGSensitive) {
+					log("SSID: " + network.getSsid());
+					log("PASS: " + network.getPassword());
+				}
+				
+				// If we found the network with the same ssid
+				if (network.getSsid().equals(ssid)) {
+					
+					if (DBGSensitive) {
+						log("Found network: " + ssid + ", with password: " + network.getPassword());
+					}
+					
+					// Show the password in a Dialog
+					getDialog(context, ssid, network.getPassword()).show();
+					
+					// Because we found what we wanted, we stop searching
+					break;
+				}
+				
+            }
+			
+		}
 	}
 }
