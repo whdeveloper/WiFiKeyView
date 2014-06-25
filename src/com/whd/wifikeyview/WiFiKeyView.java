@@ -16,12 +16,7 @@ package com.whd.wifikeyview;
  * limitations under the License.
  */
 
-import java.util.List;
-
-import com.possebom.openwifipasswordrecover.interfaces.NetworkListener;
-import com.possebom.openwifipasswordrecover.model.Network;
-import com.possebom.openwifipasswordrecover.parser.NetworkParser;
-
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.ClipData;
@@ -38,11 +33,20 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.possebom.openwifipasswordrecover.interfaces.NetworkListener;
+import com.possebom.openwifipasswordrecover.model.Network;
+import com.possebom.openwifipasswordrecover.parser.NetworkParser;
+
+import java.util.List;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
+
+import static de.robv.android.xposed.XposedHelpers.callMethod;
 
 /**
  * 
@@ -64,11 +68,14 @@ public class WiFiKeyView implements IXposedHookLoadPackage  {
 	
 	// Debugging
 	private static final String  TAG          = "WHD - WiFiKeyView || ";
-	private static final boolean DBG          = true;
+	private static final boolean DBG          = false;
 	private static final boolean DBGSensitive = false;
 	
 	// Context menu id's
 	private static int MENU_ID_SHOWPASSWORD = 999;
+
+    // Modules context
+    private static Context mContext;
 	
 	// What to hook
 	private static final String PACKAGE_SETTINGS   = "com.android.settings";
@@ -90,8 +97,12 @@ public class WiFiKeyView implements IXposedHookLoadPackage  {
 				// If the context menu has all options added (or not the connect)
 				int size = ((ContextMenu)param.args[0]).size(); 
 				if ( (size == 2) || (size == 3) ) {
-					((ContextMenu) param.args[0]).add(Menu.NONE, MENU_ID_SHOWPASSWORD, 3, "Show password");
-					log("Show password added to Context menu.");
+                    if (mContext == null) {
+                        Context wifiSettingsContext = ((Activity) callMethod(param.thisObject, "getActivity")).getApplicationContext();
+                        mContext = wifiSettingsContext.createPackageContext("com.whd.wifikeyview", Context.CONTEXT_IGNORE_SECURITY);
+                    }
+					((ContextMenu) param.args[0]).add(Menu.NONE, MENU_ID_SHOWPASSWORD, 3, mContext.getString(R.string.show_password));
+					if (DBG) log("Show password added to Context menu.");
 				}
 				
 			}
@@ -177,16 +188,16 @@ public class WiFiKeyView implements IXposedHookLoadPackage  {
 		
 		// Set the title and message
 		dialog.setTitle(ssid);
-		dialog.setMessage((password.equals("")) ? ("Network has no password."): ("Password: " + password));
+		dialog.setMessage((password.equals("")) ? mContext.getString(R.string.network_no_password) : (mContext.getString(R.string.password) + " " + password));
 		
 		// Make it cancelable
 		dialog.setCancelable(true);
 		
 		// Positive button is for copy to clipboard
-		dialog.setPositiveButton("Copy", new CopyClickListener(context, password));
+		dialog.setPositiveButton(mContext.getString(R.string.copy), new CopyClickListener(context, password));
 		
 		// Negative buttons is for sharing
-		dialog.setNegativeButton("Share", new ShareClickListener(context, ssid, password));
+		dialog.setNegativeButton(mContext.getString(R.string.share), new ShareClickListener(context, ssid, password));
 		
 		// Create and return the dialog
 		return dialog.create();
@@ -219,7 +230,7 @@ public class WiFiKeyView implements IXposedHookLoadPackage  {
 			}
 			
 			// Visual feedback
-			Toast.makeText(context, "Password copied to clipboard", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, mContext.getString(R.string.password_copied), Toast.LENGTH_SHORT).show();
 		}
 		
 	}
@@ -242,13 +253,12 @@ public class WiFiKeyView implements IXposedHookLoadPackage  {
 			// Create intent for sharing and set data
 			Intent share = new Intent();
 			share.setAction(Intent.ACTION_SEND);
-			share.putExtra(Intent.EXTRA_TEXT, "SSID: " + ssid + ", Password: " + password);
+			share.putExtra(Intent.EXTRA_TEXT, "SSID: " + ssid + "\n" +  mContext.getString(R.string.password) + " " + password);
 			share.setType("text/plain");
 			
 			// Send the intent
-			context.startActivity(Intent.createChooser(share, "Share password to.."));
+			context.startActivity(Intent.createChooser(share, mContext.getString(R.string.share_password_to)));
 		}
-		
 	}
 	
 	private class WiFiNetworkListener implements NetworkListener {
@@ -286,9 +296,7 @@ public class WiFiKeyView implements IXposedHookLoadPackage  {
 					// Because we found what we wanted, we stop searching
 					break;
 				}
-				
             }
-			
 		}
 	}
 }

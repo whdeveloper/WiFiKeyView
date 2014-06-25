@@ -1,5 +1,13 @@
 <resources>
 
     <string name="app_name">WiFiKeyView</string>
+    <string name="app_description">View your WiFi passwords in settings</string>
+    <string name="show_password">Show password</string>
+    <string name="password">Password: </string>
+    <string name="copy">Copy</string>
+    <string name="share">Share</string>
+    <string name="password_copied">Password copied to clipboard</string>
+    <string name="share_password_to">Share password to&#8230;</string>
+    <string name="network_no_password">Network has no password.</string>
 
 </resources>

@@ -1,0 +1,13 @@
+<resources>
+
+    <string name="app_name">WiFiKeyView</string>
+    <string name="app_description">Просмотр ваших WiFi паролей в настройках</string>
+    <string name="show_password">Показать пароль</string>
+    <string name="password">Пароль:</string>
+    <string name="copy">Копировать</string>
+    <string name="share">Поделиться</string>
+    <string name="password_copied">Пароль скопирован в буфер обмена</string>
+    <string name="share_password_to">Отправить пароль&#8230;</string>
+    <string name="network_no_password">Сеть без пароля.</string>
+
+</resources>
