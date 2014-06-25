@@ -1,0 +1,13 @@
+<resources>
+
+    <string name="app_name">WiFiKeyView</string>
+    <string name="app_description">Zeige das WLAN Passwort in den Einstellungen an</string>
+    <string name="show_password">Passwort anzeigen</string>
+    <string name="password">Passwort:</string>
+    <string name="copy">Kopieren</string>
+    <string name="share">Teilen</string>
+    <string name="password_copied">Passwort in Zwischenablage kopiert</string>
+    <string name="share_password_to">Passwort teilen mit&#8230;</string>
+    <string name="network_no_password">Das Netzwerk hat kein Passwort</string>
+
+</resources>
