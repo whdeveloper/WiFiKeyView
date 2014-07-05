@@ -1,0 +1,13 @@
+<resources>
+
+    <string name="app_name">WiFiKeyView</string>
+    <string name="app_description"Zobraziť vaše Wi-Fi heslá v Nastaveniach</string>
+    <string name="show_password">Zobraziť heslo</string>
+    <string name="password">Heslo: </string>
+    <string name="copy">Kopírovať</string>
+    <string name="share">Zdieľať</string>
+    <string name="password_copied">Heslo bolo skopírované do schránky</string>
+    <string name="share_password_to">Zdieľať heslo pomocou&#8230;</string>
+    <string name="network_no_password">Sieť nemá žiadne heslo.</string>
+
+</resources>
