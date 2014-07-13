@@ -18,25 +18,22 @@ package com.whd.wifikeyview;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.preference.Preference;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.possebom.openwifipasswordrecover.interfaces.NetworkListener;
 import com.possebom.openwifipasswordrecover.model.Network;
-import com.possebom.openwifipasswordrecover.parser.NetworkParser;
+import com.whd.wifikeyview.hooks.LongPressNetworkClickedHook;
+import com.whd.wifikeyview.hooks.LongPressNetworkHook;
 
 import java.util.List;
 
@@ -45,8 +42,6 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
-
-import static de.robv.android.xposed.XposedHelpers.callMethod;
 
 /**
  * 
@@ -68,11 +63,7 @@ public class WiFiKeyView implements IXposedHookLoadPackage  {
 	
 	// Debugging
 	private static final String  TAG          = "WHD - WiFiKeyView || ";
-	private static final boolean DBG          = false;
 	private static final boolean DBGSensitive = false;
-	
-	// Context menu id's
-	private static int MENU_ID_SHOWPASSWORD = 999;
 
     // Modules context
     private static Context mContext;
@@ -88,98 +79,44 @@ public class WiFiKeyView implements IXposedHookLoadPackage  {
 		// Reference to the class we want to hook
 		final Class<?> SettingsClazz = XposedHelpers.findClass(CLASS_WIFISETTINGS, lpparam.classLoader);
 		
-		// Hook com.android.settings.wifi.WifiSettings#onCreateContextMenu(ContextMenu, View, ContextMenuInfo)
-		// If the network is known, and the modify is showing
-		XposedHelpers.findAndHookMethod(SettingsClazz, "onCreateContextMenu", ContextMenu.class, View.class, ContextMenuInfo.class, new XC_MethodHook() {
+		// Get the Context
+		XposedHelpers.findAndHookMethod(SettingsClazz, "onAttach", Activity.class, new XC_MethodHook() {
 			@Override
-			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-				
-				// If the context menu has all options added (or not the connect)
-				int size = ((ContextMenu)param.args[0]).size(); 
-				if ( (size == 2) || (size == 3) ) {
-                    if (mContext == null) {
-                        Context wifiSettingsContext = ((Activity) callMethod(param.thisObject, "getActivity")).getApplicationContext();
-                        mContext = wifiSettingsContext.createPackageContext("com.whd.wifikeyview", Context.CONTEXT_IGNORE_SECURITY);
-                    }
-					((ContextMenu) param.args[0]).add(Menu.NONE, MENU_ID_SHOWPASSWORD, 3, mContext.getString(R.string.show_password));
-					if (DBG) log("Show password added to Context menu.");
+			public void beforeHookedMethod(MethodHookParam param) {
+				try {
+					mContext = ((Context) param.args[0]).createPackageContext("com.whd.wifikeyview", Context.CONTEXT_IGNORE_SECURITY);
+				} catch (NameNotFoundException nnfe) {
+					nnfe.printStackTrace();
 				}
-				
 			}
 		});
 		
+		// Hook com.android.settings.wifi.WifiSettings#onCreateContextMenu(ContextMenu, View, ContextMenuInfo)
+		// If the network is known, and the modify is showing
+		XposedHelpers.findAndHookMethod(
+				SettingsClazz, 											// Class to hook
+				"onCreateContextMenu", 									// Method to hook
+				ContextMenu.class, View.class, ContextMenuInfo.class, 	// Method parameters
+				new LongPressNetworkHook(mContext)						// Class to handle the hook
+		);
+		
 		// Hook com.android.settings.wifi.WifiSettings#onContextItemSelected(MenuItem)
 		// After the normal method has run, check if our show password is selected
-		XposedHelpers.findAndHookMethod(SettingsClazz, "onContextItemSelected", MenuItem.class, new XC_MethodHook() {
-			@Override
-			protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-				MenuItem menuItem = (MenuItem) param.args[0];
-				
-				// We only want to do something on our own menu item
-				if ( menuItem.getItemId() == MENU_ID_SHOWPASSWORD) {
-					
-					// Output the class of the object
-					if (DBG) {
-						Object   objectWifiSettings = param.thisObject;
-						Class<?> classWifiSettings  = objectWifiSettings.getClass();
-						while (classWifiSettings.getSuperclass() != null) {
-							log("WiFiSettings subclass: " + classWifiSettings.getCanonicalName());
-							classWifiSettings = classWifiSettings.getSuperclass();
-						}
-					}
-					
-					// The selected position in the network list
-					int selectedListPosition = ((AdapterContextMenuInfo) menuItem.getMenuInfo()).position; 
-					
-					if (!(param.thisObject instanceof Fragment)) {
-						throw new RuntimeException("param.thisObject is not an instance of Fragment");
-					}
-					
-					// Get an reference to the preference fragment
-					Fragment wifiFragment = ((Fragment)param.thisObject);
-					
-					// Context for the Dialog
-					Context context = (Context) wifiFragment.getActivity();
-					
-					// Search the ListView
-					View rawListView = wifiFragment.getView().findViewById(android.R.id.list);
-					
-					// Be sure it is an ListView, and not something else using id 'android.R.id.list'
-					if (!(rawListView instanceof ListView)) {
-						throw new RuntimeException("Content has view with id attribute 'android.R.id.list' that is not a ListView class");
-					}
-					
-					// Cast the View to an Listview
-					ListView mList = (ListView) rawListView;
-					
-					// Get the selected ListView item through the adapter
-					Object object = mList.getAdapter().getItem(selectedListPosition);
-					if (DBG) {
-						Class<?> classObject = object.getClass();
-						while (classObject.getSuperclass() != null) {
-							log("ListView item subclass: " + classObject.getCanonicalName());
-							classObject = classObject.getSuperclass();
-						}
-					}
-					Preference pref = (Preference) object;
-					
-					// Get the ssid (title) of the preference
-					String ssid = pref.getTitle().toString();
-					
-					// When debugging, show we clicked the item, and the ssid
-					if (DBG) log("MENU_ID_SHOWPASSWORD clicked!! SSID: " + ssid);
-					
-					// Run the Task, this will check all entries in WPA_SUPPLICANT file
-					new NetworkParser(new WiFiNetworkListener(context, ssid)).execute();
-					
-					// Set result to true
-					param.setResult(true);
-				}
-			}
-		});
+		XposedHelpers.findAndHookMethod(
+				SettingsClazz, 								// Class to hook
+				"onContextItemSelected", 					// Method to hook
+				MenuItem.class, 							// Method parameters
+				new LongPressNetworkClickedHook(mContext)	// Class to handle the hook
+		);
     }
 	
-	private void log(String msg) {
+	/**
+	 * Log to the XposedBridge
+	 * 
+	 * @param msg
+	 * 		The text to log (TAG will be added automatically)
+	 */
+	public static void log(String msg) {
 		XposedBridge.log(TAG + msg);
 	}
 	
@@ -261,7 +198,7 @@ public class WiFiKeyView implements IXposedHookLoadPackage  {
 		}
 	}
 	
-	private class WiFiNetworkListener implements NetworkListener {
+	public class WiFiNetworkListener implements NetworkListener {
 		
 		private Context context;
 		private String  ssid;
