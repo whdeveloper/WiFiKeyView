@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <PreferenceCategory 
+        android:title="@string/preferences_debug_global">
+        
+        <CheckBoxPreference 
+            android:title="preferences_debug_enabled_title"
+            android:summary="preferences_debug_enabled_summary"
+            android:key="debugging_enabled" />
+    </PreferenceCategory>
+    
+</PreferenceScreen>
