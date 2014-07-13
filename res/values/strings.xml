@@ -10,4 +10,11 @@
     <string name="share_password_to">Share password to&#8230;</string>
     <string name="network_no_password">Network has no password.</string>
 
+    <!-- Preferences -->
+    <string name="preferences_debug_title">Debug</string>
+    <string name="preferences_debug_summary">Control the debug settings</string>
+    
+    <string name="preferences_debug_global">Debugging</string>
+    <string name="preferences_debug_enabled_title">Debugging enabled</string>
+    <string name="preferences_debug_enabled_summary">This will enable/disable all debugging methods</string>
 </resources>
