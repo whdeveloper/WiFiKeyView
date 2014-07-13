@@ -1,7 +1,7 @@
 <resources>
 
     <string name="app_name">WiFiKeyView</string>
-    <string name="app_description"Zobraziť vaše Wi-Fi heslá v Nastaveniach</string>
+    <string name="app_description">Zobraziť vaše Wi-Fi heslá v Nastaveniach</string>
     <string name="show_password">Zobraziť heslo</string>
     <string name="password">Heslo: </string>
     <string name="copy">Kopírovať</string>
