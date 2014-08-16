@@ -1,0 +1,20 @@
+<resources>
+
+    <string name="app_name">查看WIFI密码</string>
+    <string name="app_description">在WIFI设置页面查看你的WIFI密码</string>
+    <string name="show_password">显示密码</string>
+    <string name="password">密码: </string>
+    <string name="copy">复制</string>
+    <string name="share">分享</string>
+    <string name="password_copied">密码已复制到剪贴板</string>
+    <string name="share_password_to">分享密码到&#8230;</string>
+    <string name="network_no_password">该网络没有密码</string>
+
+    <!-- Preferences -->
+    <string name="preferences_debug_title">调试</string>
+    <string name="preferences_debug_summary">控制调试设置</string>
+    
+    <string name="preferences_debug_global">调试</string>
+    <string name="preferences_debug_enabled_title">启用调试</string>
+    <string name="preferences_debug_enabled_summary">这将启用/禁用所有的调试方法</string>
+</resources>
