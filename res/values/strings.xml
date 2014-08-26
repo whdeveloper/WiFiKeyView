@@ -6,7 +6,6 @@
     <string name="password">Password: </string>
     <string name="copy">Copy</string>
     <string name="share">Share</string>
-    <string name="password_copied">Password copied to clipboard</string>
     <string name="share_password_to">Share password to&#8230;</string>
     <string name="network_no_password">Network has no password.</string>
 
@@ -17,4 +16,36 @@
     <string name="preferences_debug_global">Debugging</string>
     <string name="preferences_debug_enabled_title">Debugging enabled</string>
     <string name="preferences_debug_enabled_summary">This will enable/disable all debugging methods</string>
+    
+    <string name="preferences_showpassword_global">Password</string>
+    
+    <!-- GetNetworkPasswordTask -->
+    <string name="getnetworkpassword_progressdialog_message">Getting password&#8230;</string>
+    
+    <!-- ShowPassword -->
+    <string name="supplicant_key_ssid">SSID</string>
+    <string name="supplicant_key_bssid">BSSID</string>
+    <string name="supplicant_key_wep_key0">Wep key 0</string>
+    <string name="supplicant_key_wep_key1">Wep key 1</string>
+    <string name="supplicant_key_wep_key2">Wep key 2</string>
+    <string name="supplicant_key_wep_key3">Wep key 3</string>
+    <string name="supplicant_key_psk">Pre shared key</string>
+    <string name="supplicant_key_password">Password</string>
+    <string name="supplicant_key_key_mgmt">Key management</string>
+    <string name="supplicant_key_group">Group</string>
+    <string name="supplicant_key_auth_alg">Auth alg</string>
+    <string name="supplicant_key_eap">EAP</string>
+    <string name="supplicant_key_identity">Identity</string>
+    <string name="supplicant_key_anonymous_identity">Anonymous identity</string>
+    <string name="supplicant_key_phase1">Phase 1</string>
+    <string name="supplicant_key_phase2">Phase 2</string>
+    <string name="supplicant_key_priority">Priority</string>
+    <string name="supplicant_key_pac_file">Pac file</string>
+    <string name="supplicant_key_ca_cert">Ca cert</string>
+    <string name="supplicant_key_client_cert">Client cert</string>
+    <string name="supplicant_key_private_key">Private key</string>
+    <string name="supplicant_key_private_key_password">Private key password</string>
+    
+    <string name="password_copied">Password copied to clipboard</string>
+    
 </resources>

@@ -1,10 +1,6 @@
 package com.whd.wifikeyview.hooks;
 
-import static de.robv.android.xposed.XposedHelpers.callMethod;
-
-import android.app.Activity;
 import android.content.Context;
-import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.Menu;
 
@@ -21,19 +17,13 @@ public class LongPressNetworkHook extends XC_MethodHook {
 	private Context mContext;
 	private boolean debug;
 	
-	public LongPressNetworkHook(Context context) {
-		mContext = context;
-		
-		// Are we debugging?
-		debug = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("", false);
-	}
-	
 	@Override
 	public void beforeHookedMethod(MethodHookParam param) throws Exception {
-        if (mContext == null) {
-            Context wifiSettingsContext = ((Activity) callMethod(param.thisObject, "getActivity")).getApplicationContext();
-            mContext = wifiSettingsContext.createPackageContext("com.whd.wifikeyview", Context.CONTEXT_IGNORE_SECURITY);
-        }
+		// Get the Context
+		mContext = WiFiKeyView.getContext(param);
+		
+		// Are we debugging?
+		debug = WiFiKeyView.isDebugging(mContext);
 	}
 	
 	@Override
@@ -49,8 +39,16 @@ public class LongPressNetworkHook extends XC_MethodHook {
 			WiFiKeyView.log("LongPressNetworkHook#afterHookedMethod(MethodHookParam); ContextMenu not found.");
 			return;
 		}
-		
-		// If the context menu has all options added (or not the connect)
+		/*
+		 * If an network is not known there is only 1 option
+		 * 1. Connect
+		 * 
+		 * If an network is already known there are 2 options for the menu items:
+		 * 1. Connect, Modify, Forget	-> When not connected to the network
+		 * 2. Modify, Forget			-> When connected to the network
+		 * 
+		 * As we can only see the password previously entered, this only supports known networks
+		 */
 		int size = menu.size(); 
 		if ( (size == 2) || (size == 3) ) {
 			menu.add(

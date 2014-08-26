@@ -23,8 +23,6 @@ public class SettingsActivity extends PreferenceActivity {
 	}
 	
 	protected boolean isValidFragment(String fragmentName) {
-		return (
-				DebugPreferences.class.getName().equals(fragmentName)
-		);
+		return (DebugPreferences.class.getName().equals(fragmentName));
 	}
 }

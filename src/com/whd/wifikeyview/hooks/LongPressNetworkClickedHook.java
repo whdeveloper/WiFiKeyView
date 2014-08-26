@@ -1,38 +1,30 @@
 package com.whd.wifikeyview.hooks;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-import com.possebom.openwifipasswordrecover.parser.NetworkParser;
+import com.whd.wifikeyview.ShowPassword;
 import com.whd.wifikeyview.WiFiKeyView;
+import com.whd.wifikeyview.network.NetworkParseTask;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
 
 public class LongPressNetworkClickedHook extends XC_MethodHook {
 	
 	// Context menu id's
 	private static int MENU_ID_SHOWPASSWORD = 999;
 	
-	private Context mContext;
+	// Is debugging enabled?
 	private boolean debug;
 	
-	public LongPressNetworkClickedHook(Context context) {
-		mContext = context;
-		
-		// Are we debugging?
-		debug = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("", false);
-	}
-	
 	@Override
-	public void beforeHookedMethod(MethodHookParam param) {
-		
+	public void beforeHookedMethod(MethodHookParam param) throws Exception {
+		// Are we debugging?
+		debug = WiFiKeyView.isDebugging(WiFiKeyView.getContext(param));
 	}
 	
 	@Override
@@ -62,9 +54,6 @@ public class LongPressNetworkClickedHook extends XC_MethodHook {
 			// Get an reference to the preference fragment
 			Fragment wifiFragment = ((Fragment)param.thisObject);
 			
-			// Context for the Dialog
-			Context context = (Context) wifiFragment.getActivity();
-			
 			// Search the ListView
 			View rawListView = wifiFragment.getView().findViewById(android.R.id.list);
 			
@@ -73,7 +62,7 @@ public class LongPressNetworkClickedHook extends XC_MethodHook {
 				throw new RuntimeException("Content has view with id attribute 'android.R.id.list' that is not a ListView class");
 			}
 			
-			// Cast the View to an Listview
+			// Cast the View to an ListView
 			ListView mList = (ListView) rawListView;
 			
 			// Get the selected ListView item through the adapter
@@ -95,8 +84,8 @@ public class LongPressNetworkClickedHook extends XC_MethodHook {
 				WiFiKeyView.log("MENU_ID_SHOWPASSWORD clicked!! SSID: " + ssid);
 			}
 			
-			// Run the Task, this will check all entries in WPA_SUPPLICANT file
-			new NetworkParser(new WiFiNetworkListener(context, ssid)).execute();
+			// Execute the task with given ssid, and return to ShowPasswordDialog
+			new NetworkParseTask(new ShowPassword(wifiFragment.getActivity())).execute(ssid);
 			
 			// Set result to true
 			param.setResult(true);
