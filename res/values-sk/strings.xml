@@ -9,5 +9,12 @@
     <string name="password_copied">Heslo bolo skopírované do schránky</string>
     <string name="share_password_to">Zdieľať heslo pomocou&#8230;</string>
     <string name="network_no_password">Sieť nemá žiadne heslo.</string>
+    <string name="preferences_debug_title">Ladenie</string>
+    <string name="preferences_debug_summary">Ovládať nastavenia ladenia</string>
+    <string name="preferences_debug_global">Ladenie</string>
+    <string name="preferences_debug_enabled_title">Povoliť ladenie</string>
+    <string name="preferences_debug_enabled_summary">Povoliť/zakázať všetky metódy ladenia</string>
+    <string name="preferences_showpassword_global">Heslo</string>
+    <string name="getnetworkpassword_progressdialog_message">Získavanie hesla&#8230;</string>
 
 </resources>
