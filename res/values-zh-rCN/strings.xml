@@ -1,0 +1,51 @@
+<resources>
+
+    <string name="app_name">查看无线密码</string>
+    <string name="app_description">在WIFI设置页面查看你的无线密码</string>
+    <string name="show_password">显示密码</string>
+    <string name="password">密码: </string>
+    <string name="copy">复制</string>
+    <string name="share">分享</string>
+	<string name="share_password_to">分享密码到&#8230;</string>
+	<string name="network_no_password">该网络没有设置密码</string>
+
+    <!-- Preferences -->
+    <string name="preferences_debug_title">调试</string>
+    <string name="preferences_debug_summary">控制调试设置</string>
+    
+    <string name="preferences_debug_global">正在调试</string>
+    <string name="preferences_debug_enabled_title">启用调试</string>
+    <string name="preferences_debug_enabled_summary">这将启用/禁用所有的调试方法</string>
+    
+    <string name="preferences_showpassword_global">密码</string>
+    
+    <!-- GetNetworkPasswordTask -->
+    <string name="getnetworkpassword_progressdialog_message">获取密码&#8230;</string>
+    
+    <!-- ShowPassword -->
+    <string name="supplicant_key_ssid">SSID</string>
+    <string name="supplicant_key_bssid">BSSID</string>
+    <string name="supplicant_key_wep_key0">WEP密钥0</string>
+    <string name="supplicant_key_wep_key1">WEP密钥1</string>
+    <string name="supplicant_key_wep_key2">WEP密钥2</string>
+    <string name="supplicant_key_wep_key3">WEP密钥3</string>
+    <string name="supplicant_key_psk">预共享密钥</string>
+    <string name="supplicant_key_password">密码</string>
+    <string name="supplicant_key_key_mgmt">密钥管理</string>
+    <string name="supplicant_key_group">组</string>
+    <string name="supplicant_key_auth_alg">验证ALG</string>
+    <string name="supplicant_key_eap">EAP</string>
+    <string name="supplicant_key_identity">身份</string>
+    <string name="supplicant_key_anonymous_identity">匿名身份</string>
+    <string name="supplicant_key_phase1">第1阶段</string>
+    <string name="supplicant_key_phase2">第2阶段</string>
+    <string name="supplicant_key_priority">优先</string>
+    <string name="supplicant_key_pac_file">PAC文件</string>
+    <string name="supplicant_key_ca_cert">CA证书</string>
+    <string name="supplicant_key_client_cert">客户端证书</string>
+    <string name="supplicant_key_private_key">私钥</string>
+    <string name="supplicant_key_private_key_password">私钥密码</string>
+    
+    <string name="password_copied">密码已复制到剪贴板</string>
+
+</resources>
