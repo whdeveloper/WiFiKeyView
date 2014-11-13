@@ -9,5 +9,34 @@
     <string name="password_copied">Heslo bolo skopírované do schránky</string>
     <string name="share_password_to">Zdieľať heslo pomocou&#8230;</string>
     <string name="network_no_password">Sieť nemá žiadne heslo.</string>
+    <string name="preferences_debug_title">Ladenie</string>
+    <string name="preferences_debug_summary">Ovládať nastavenia ladenia</string>
+    <string name="preferences_debug_global">Ladenie</string>
+    <string name="preferences_debug_enabled_title">Povoliť ladenie</string>
+    <string name="preferences_debug_enabled_summary">Povoliť/zakázať všetky metódy ladenia</string>
+    <string name="preferences_showpassword_global">Heslo</string>
+    <string name="getnetworkpassword_progressdialog_message">Získavanie hesla&#8230;</string>
+    <string name="supplicant_key_ssid">SSID</string>
+    <string name="supplicant_key_bssid">BSSID</string>
+    <string name="supplicant_key_wep_key0">WEP kľúč 0</string>
+    <string name="supplicant_key_wep_key1">WEP kľúč 1</string>
+    <string name="supplicant_key_wep_key2">WEP kľúč 2</string>
+    <string name="supplicant_key_wep_key3">WEP kľúč 3</string>
+    <string name="supplicant_key_psk">Vopred zdieľaný kľúč</string>
+    <string name="supplicant_key_password">Heslo</string>
+    <string name="supplicant_key_key_mgmt">Správa kľúčov</string>
+    <string name="supplicant_key_group">Skupina</string>
+    <string name="supplicant_key_auth_alg">Overovací algoritmus</string>
+    <string name="supplicant_key_eap">EAP</string>
+    <string name="supplicant_key_identity">Identita</string>
+    <string name="supplicant_key_anonymous_identity">Anonymná identita</string>
+    <string name="supplicant_key_phase1">Fráza 1</string>
+    <string name="supplicant_key_phase2">Fráza 2</string>
+    <string name="supplicant_key_priority">Priorita</string>
+    <string name="supplicant_key_pac_file">PAC súbor</string>
+    <string name="supplicant_key_ca_cert">Certifikát CA</string>
+    <string name="supplicant_key_client_cert">Client cert</string>
+    <string name="supplicant_key_private_key">Súkromný kľúč</string>
+    <string name="supplicant_key_private_key_password">Heslo súkromného kľúča</string>
 
 </resources>
