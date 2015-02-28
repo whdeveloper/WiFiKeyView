@@ -18,9 +18,9 @@ public class NetworkParser {
 	
 	// Supplicant files
 	private static String[] passwordFiles = new String[] {
-			"cat /data/misc/wifi/wpa_supplicant.conf",
-			"cat /data/wifi/bcm_supp.conf",
-			"cat /data/misc/wifi/wpa.conf"
+			"/data/misc/wifi/wpa_supplicant.conf",
+			"/data/wifi/bcm_supp.conf",
+			"/data/misc/wifi/wpa.conf"
 	};
 	
 	// An list with all networks
@@ -39,7 +39,7 @@ public class NetworkParser {
 			// Try to read the file, if it returns empty, try another
 			List<String> suResult = null;
 			for (String passwordFile : passwordFiles) {
-				suResult = Shell.SU.run(passwordFile);
+				suResult = Shell.SU.run("cat " + passwordFile);
 				
 				if (!suResult.isEmpty()) {
 					break;
@@ -95,10 +95,14 @@ public class NetworkParser {
 							network.put(SupplicantKey.valueOf(entry[0]), entry[1].replace("\"", ""));
 							
 						} catch (IllegalArgumentException iae) {
-							WiFiKeyView.log("NetworkParser#parse(List<String>); Unkown key in supplicant file: " + entry[0]);
+							if (WiFiKeyView.isDebugging()) {
+								WiFiKeyView.log("NetworkParser#parse(List<String>); Unknown key in supplicant file: " + entry[0]);
+							}
 						}
 					} else {
-						WiFiKeyView.log("NetworkParser#parse(List<String>); Unkown entry in supplicant file: " + string);
+						if (WiFiKeyView.isDebugging()) {
+							WiFiKeyView.log("NetworkParser#parse(List<String>); Unknown entry in supplicant file: " + string);
+						}
 					}
 				}
 			}

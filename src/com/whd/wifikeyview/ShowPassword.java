@@ -7,10 +7,10 @@ import com.whd.wifikeyview.network.NetworkParser.SupplicantKey;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TableLayout;
@@ -37,7 +37,7 @@ public class ShowPassword implements NetworkListener {
 	}
 
 	@Override
-	public void onParserDone(Network network) {
+	public void onParserDone(final Network network) {
 		if (network == null) {
 			WiFiKeyView.log("ShowPassword#onParserDone(Network); Network was null!!");
 			return;
@@ -46,6 +46,7 @@ public class ShowPassword implements NetworkListener {
 		TableLayout showPasswordTable = new TableLayout(mContext);
 		showPasswordTable.setStretchAllColumns(true);
 		
+		// Read all network entries and add those with data
 		for (SupplicantKey key : SupplicantKey.values()) {
 			String value = network.get(key);
 			if ( (value != null) && (!value.equals("")) ) {
@@ -55,24 +56,46 @@ public class ShowPassword implements NetworkListener {
 			}
 		}
 		
-		// Toast/Dialog/CopyPass/SharePass
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+		// Get PSK and password
+		String psk = network.get(SupplicantKey.PSK);
+		String password = network.get(SupplicantKey.PASSWORD);
 		
-		if (sharedPreferences.getBoolean("directcopypsk", false)) {
-			String psk = network.get(SupplicantKey.PSK);
-			if ( (psk != null) && (!psk.equals("")) ) {
-				copyToClipboard(psk);
-			}
-		} else if (sharedPreferences.getBoolean("directcopypassword", false)) {
-			String password = network.get(SupplicantKey.PASSWORD);
-			if ( (password != null) && (!password.equals("")) ) {
-				copyToClipboard(password);
-			}
+		// Copy PSK to clip board if preference is set
+		if (WiFiKeyView.doCopyPSK() && (psk != null) && (!psk.equals("")) ) {
+			copyToClipboard(psk);
+		}
+			
+		// Copy password to clip board if preference is set
+		if (WiFiKeyView.doCopyPassword() && (password != null) && (!password.equals("")) ) {
+			copyToClipboard(password);
 		}
 		
+		// Show results to the user
 		AlertDialog dialog = new AlertDialog.Builder(activity)
 				.setTitle(network.get(SupplicantKey.SSID))
 				.setView(showPasswordTable)
+				.setPositiveButton(mContext.getString(R.string.copy), new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						
+						// Get psk and password
+						String psk = network.get(SupplicantKey.PSK);
+						String password = network.get(SupplicantKey.PASSWORD);
+						
+						// Copy the right one to the clipboard
+						if ( (psk != null) && (!psk.equals("")) ) {
+							copyToClipboard(psk);
+						} else if ( (password != null) && (!password.equals("")) ) {
+							copyToClipboard(password);
+						}
+					}
+				})
+				.setNegativeButton(mContext.getString(R.string.cancel), new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				})
 				.create();
 		dialog.show();
 	}
@@ -86,7 +109,7 @@ public class ShowPassword implements NetworkListener {
 		if (clipboardManager instanceof android.content.ClipboardManager) {
 			((android.content.ClipboardManager) clipboardManager).setPrimaryClip(ClipData.newPlainText("", text));
 					
-			// Otherwise it is the one in text package
+		// Otherwise it is the one in text package
 		} else {
 			((android.text.ClipboardManager) clipboardManager).setText(text);
 		}
@@ -95,7 +118,8 @@ public class ShowPassword implements NetworkListener {
 		Toast.makeText(mContext, mContext.getString(R.string.password_copied), Toast.LENGTH_SHORT).show();
 	}
 	
-	//TODO
+	// TODO
+	// Custom strings?
 	@SuppressWarnings("unused")
 	private void share() {
 		// Create intent for sharing and set data
@@ -108,15 +132,28 @@ public class ShowPassword implements NetworkListener {
 		mContext.startActivity(Intent.createChooser(share, mContext.getString(R.string.share_password_to)));
 	}
 	
+	/**
+	 * Display a row from the supplicant file in a human readable way
+	 * 
+	 * @param key
+	 * 	: The key for the entry
+	 * @param value
+	 * 	: The value for the entry
+	 * @return
+	 * 	: A TableRow object to be displayed
+	 */
 	private TableRow generateTableRow(String key, String value) {
+		// Generate row layout
 		TableRow row = new TableRow(mContext);
 		row.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		
+		// Add the key to the layout
 		TextView tv_key = new TextView(mContext);
 		tv_key.setText(key);
 		tv_key.setPadding(15, 0, 0, 0);
 		row.addView(tv_key);
 		
+		// Add the value to the layout
 		TextView value_key = new TextView(mContext);
 		value_key.setText(value);
 		value_key.setPadding(0, 0, 15, 0);

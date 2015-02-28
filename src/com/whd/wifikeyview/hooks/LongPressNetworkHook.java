@@ -23,22 +23,28 @@ public class LongPressNetworkHook extends XC_MethodHook {
 		mContext = WiFiKeyView.getContext(param);
 		
 		// Are we debugging?
-		debug = WiFiKeyView.isDebugging(mContext);
+		debug = WiFiKeyView.isDebugging();
 	}
 	
 	@Override
 	public void afterHookedMethod(MethodHookParam param) {
+		
+		// Get the context menu from the arguments
 		ContextMenu menu = null;
 		try {
 			menu = ((ContextMenu) param.args[0]);
 		} catch (ClassCastException cce) {
+			// Another method was hooked, otherwise the footprint would have been the same,
+			// something went horribly wrong here
 			cce.printStackTrace();
 		}
 		
+		// Without the menu, there is nothing to do
 		if (menu == null) {
 			WiFiKeyView.log("LongPressNetworkHook#afterHookedMethod(MethodHookParam); ContextMenu not found.");
 			return;
 		}
+		
 		/*
 		 * If an network is not known there is only 1 option
 		 * 1. Connect
@@ -52,10 +58,10 @@ public class LongPressNetworkHook extends XC_MethodHook {
 		int size = menu.size(); 
 		if ( (size == 2) || (size == 3) ) {
 			menu.add(
-					Menu.NONE, 										// I do not care about the group it is in
-					MENU_ID_SHOWPASSWORD, 							// The id to listen for clicks
-					Menu.NONE, 										// I do not care about the order the items are in
-					mContext.getString(R.string.show_password)		// The text for the menu option
+					Menu.NONE, 												// Group 	(not used/needed)
+					MENU_ID_SHOWPASSWORD, 									// Id 		(of the item)
+					Menu.NONE, 												// Order    (not used/needed)
+					mContext.getString(R.string.menu_option_show_password)	// Text		(for display in the item)
 			);
 			
 			if (debug) {

@@ -43,7 +43,10 @@ public class NetworkParseTask extends AsyncTask<String, Void, Network> {
 		
 		List<Network> networks = NetworkParser.getNetworks();
 		for (Network network : networks) {
-			WiFiKeyView.log("" + network.get(SupplicantKey.SSID) + " =?= " + params[0]);
+			if (WiFiKeyView.isDebugging()) {
+				WiFiKeyView.log("" + network.get(SupplicantKey.SSID) + " =?= " + params[0]);
+			}
+			
 			if (network.get(SupplicantKey.SSID).equals(params[0])) {
 				ret = network;
 				break;

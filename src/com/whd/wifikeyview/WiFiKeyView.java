@@ -17,18 +17,20 @@ package com.whd.wifikeyview;
  */
 
 import static de.robv.android.xposed.XposedHelpers.callMethod;
+
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
 import com.whd.wifikeyview.hooks.LongPressNetworkClickedHook;
 import com.whd.wifikeyview.hooks.LongPressNetworkHook;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.IXposedHookZygoteInit;
+import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
@@ -50,17 +52,26 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
  *  
  *  The code from the other projects are still in original state, and haven't been changed.
  */
-public class WiFiKeyView implements IXposedHookLoadPackage  {
+public class WiFiKeyView implements IXposedHookZygoteInit, IXposedHookLoadPackage  {
 	
 	// Debugging
-	private static final String  TAG          = "WHD - WiFiKeyView || ";
-	private static final boolean DBGSensitive = false;
+	private static final String  TAG = 
+			"WHD - WiFiKeyView || ";
 	
 	// What to hook
-	private static final String PACKAGE_SETTINGS   = "com.android.settings";
-	private static final String CLASS_WIFISETTINGS = "com.android.settings.wifi.WifiSettings";
+	private static final String PACKAGE_SETTINGS = 
+			"com.android.settings";
 	
-	private Context mContext;
+	private static final String CLASS_WIFISETTINGS = 
+			"com.android.settings.wifi.WifiSettings";
+	
+	private static XSharedPreferences mPreferences;
+	
+	@Override
+	public void initZygote(StartupParam param) throws Throwable {
+		mPreferences = new XSharedPreferences(WiFiKeyView.class.getPackage().getName());
+		mPreferences.makeWorldReadable();
+	}
 	
 	@Override
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
@@ -96,10 +107,30 @@ public class WiFiKeyView implements IXposedHookLoadPackage  {
 		XposedBridge.log(TAG + msg);
 	}
 	
-	public static boolean isDebugging(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("debug", false);
+	/**
+	 * Check the user set preferences to see if we need debugging
+	 * 
+	 * @param context Needed to get preferences
+	 * @return boolean indicating if we are debugging or not
+	 */
+	public static boolean isDebugging() {
+		return mPreferences.getBoolean("debug", false);
 	}
 	
+	public static boolean doCopyPSK() {
+		return mPreferences.getBoolean("directcopypsk", false);
+	}
+	
+	public static boolean doCopyPassword() {
+		return mPreferences.getBoolean("directcopypassword", false);
+	}
+	
+	/**
+	 * Get the Context through the package we are hooking
+	 * 
+	 * @param param An MethodHookParam contains the thisObject on which we can call methods
+	 * @return The context of our own package
+	 */
 	public static Context getContext(MethodHookParam param) {
         Context ret = null;
         
@@ -119,19 +150,4 @@ public class WiFiKeyView implements IXposedHookLoadPackage  {
         
 		return ret;
 	}
-	
-	private AlertDialog getDialog(Context context, String ssid, String password) {
-		AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-		
-		// Set the title and message
-		dialog.setTitle(ssid);
-		dialog.setMessage((password.equals("")) ? mContext.getString(R.string.network_no_password) : (mContext.getString(R.string.password) + " " + password));
-		
-		// Make it cancelable
-		dialog.setCancelable(true);
-		
-		// Create and return the dialog
-		return dialog.create();
-	}
-	
 }
