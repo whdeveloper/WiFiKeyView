@@ -5,8 +5,8 @@
         android:title="@string/preferences_debug_global">
         
         <CheckBoxPreference 
-            android:title="preferences_debug_enabled_title"
-            android:summary="preferences_debug_enabled_summary"
+            android:title="@string/preferences_debug_enabled_title"
+            android:summary="@string/preferences_debug_enabled_summary"
             android:key="debugging_enabled" />
     </PreferenceCategory>
     

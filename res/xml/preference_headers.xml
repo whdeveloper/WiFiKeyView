@@ -8,4 +8,10 @@
         android:fragment = "com.whd.wifikeyview.preferences.fragments.DebugPreferences"
     />
     
+    <header
+        android:title    = "@string/preferences_showpassword_title"
+        android:summary  = "@string/preferences_showpassword_summary"
+        android:fragment = "com.whd.wifikeyview.preferences.fragments.ShowPasswordPreferences"
+    />
+    
 </preference-headers>
