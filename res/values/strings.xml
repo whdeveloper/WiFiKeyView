@@ -1,23 +1,29 @@
 <resources>
-
+    
+    <!-- General strings -->
     <string name="app_name">WiFiKeyView</string>
     <string name="app_description">View your WiFi passwords in settings</string>
-    <string name="show_password">Show password</string>
-    <string name="password">Password: </string>
+    
     <string name="copy">Copy</string>
-    <string name="share">Share</string>
-    <string name="share_password_to">Share password to&#8230;</string>
-    <string name="network_no_password">Network has no password.</string>
-
+    <string name="cancel">Cancel</string>
+    
+    <!-- LongPressNetworkHook -->
+    <string name="menu_option_show_password">View password</string>
+    
     <!-- Preferences -->
     <string name="preferences_debug_title">Debug</string>
     <string name="preferences_debug_summary">Control the debug settings</string>
+    	<string name="preferences_debug_global">Debugging</string>
+    	<string name="preferences_debug_enabled_title">Debugging enabled</string>
+    	<string name="preferences_debug_enabled_summary">This will enable/disable all debugging methods</string>
     
-    <string name="preferences_debug_global">Debugging</string>
-    <string name="preferences_debug_enabled_title">Debugging enabled</string>
-    <string name="preferences_debug_enabled_summary">This will enable/disable all debugging methods</string>
-    
-    <string name="preferences_showpassword_global">Password</string>
+    <string name="preferences_showpassword_title">Password</string>
+    <string name="preferences_showpassword_summary">Control the view of the passwords</string>
+	    <string name="preferences_showpassword_global">Direct copy</string>
+    	<string name="preferences_showpassword_directcopypsk_title">Copy pre shared key</string>
+    	<string name="preferences_showpassword_directcopypsk_summary">Copy the pre shared key directly to the clip board</string>
+    	<string name="preferences_showpassword_directcopypassword_title">Copy password</string>
+    	<string name="preferences_showpassword_directcopypassword_summary">Copy the password directly to the clip board</string>
     
     <!-- GetNetworkPasswordTask -->
     <string name="getnetworkpassword_progressdialog_message">Getting password&#8230;</string>
