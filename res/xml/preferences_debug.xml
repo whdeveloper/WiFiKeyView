@@ -8,6 +8,12 @@
             android:title="@string/preferences_debug_enabled_title"
             android:summary="@string/preferences_debug_enabled_summary"
             android:key="debugging_enabled" />
+        
+        <CheckBoxPreference 
+            android:title="@string/preferences_launcher_icon_enabled_title"
+            android:summary="@string/preferences_launcher_icon_enabled_summary"
+            android:key="hide_launcher_icon"
+            android:defaultValue="false"/>
     </PreferenceCategory>
     
 </PreferenceScreen>
