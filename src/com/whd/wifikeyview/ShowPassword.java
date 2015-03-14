@@ -11,8 +11,10 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Color;
 import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -39,19 +41,23 @@ public class ShowPassword implements NetworkListener {
 	@Override
 	public void onParserDone(final Network network) {
 		if (network == null) {
-			WiFiKeyView.log("ShowPassword#onParserDone(Network); Network was null!!");
+			WiFiKeyView.verboseLog(this, "onParserDone(Network)", "Network was null!!");
 			return;
 		}
 		
 		TableLayout showPasswordTable = new TableLayout(mContext);
 		showPasswordTable.setStretchAllColumns(true);
 		
+		int backgroundColor = 0;
+		int defValue = isColorDark(backgroundColor) ? Color.WHITE : Color.BLACK;
+		int color = WiFiKeyView.getSharedPreferences().getInt("showpassworddialogtextcolor", defValue);
+		
 		// Read all network entries and add those with data
 		for (SupplicantKey key : SupplicantKey.values()) {
 			String value = network.get(key);
 			if ( (value != null) && (!value.equals("")) ) {
 				showPasswordTable.addView(
-						generateTableRow(mContext.getString(key.getString()), value)
+						generateTableRow(mContext.getString(key.getString()), value, color)
 				);
 			}
 		}
@@ -142,24 +148,50 @@ public class ShowPassword implements NetworkListener {
 	 * @return
 	 * 	: A TableRow object to be displayed
 	 */
-	private TableRow generateTableRow(String key, String value) {
+	private TableRow generateTableRow(String key, String value, int color) {
 		// Generate row layout
 		TableRow row = new TableRow(mContext);
 		row.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		
 		// Add the key to the layout
+		LinearLayout ll_key = new LinearLayout(mContext);
 		TextView tv_key = new TextView(mContext);
 		tv_key.setText(key);
 		tv_key.setPadding(15, 0, 0, 0);
-		row.addView(tv_key);
+		tv_key.setTextColor(color);
+		
+		ll_key.addView(tv_key);
+		ll_key.setOrientation(LinearLayout.VERTICAL);
+		ll_key.setWeightSum(1.0f);
+		row.addView(ll_key);
 		
 		// Add the value to the layout
-		TextView value_key = new TextView(mContext);
-		value_key.setText(value);
-		value_key.setPadding(0, 0, 15, 0);
-		value_key.setGravity(Gravity.RIGHT);
-		row.addView(value_key);
+		LinearLayout ll_value = new LinearLayout(mContext);
+		TextView tv_value = new TextView(mContext);
+		tv_value.setText(value);
+		tv_value.setPadding(0, 0, 15, 0);
+		tv_value.setTextColor(color);
+		tv_value.setGravity(Gravity.RIGHT);
+		
+		ll_value.addView(tv_value);
+		ll_value.setOrientation(LinearLayout.VERTICAL);
+		ll_value.setWeightSum(1.0f);
+		row.addView(ll_value);
 		
 		return row;
+	}
+	
+	/**
+	 * http://stackoverflow.com/a/24261119/1470496
+	 * @param color
+	 * @return
+	 */
+	public boolean isColorDark(int color){
+	    double darkness = 1-(0.299*Color.red(color) + 0.587*Color.green(color) + 0.114*Color.blue(color))/255;
+	    if(darkness<0.5){
+	        return false; // It's a light color
+	    }else{
+	        return true; // It's a dark color
+	    }
 	}
 }
