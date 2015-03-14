@@ -49,10 +49,10 @@ public class NetworkParser {
 			if ( (suResult != null) && (!suResult.isEmpty()) ) {
 				parse(suResult);
 			} else {
-				WiFiKeyView.log("NetworkParser#getNetworks(); Could not open a supplicant file");
+				WiFiKeyView.verboseLog(NetworkParser.class, "getNetworks()", "Could not open a supplicant file");
 			}
 		} else {
-			WiFiKeyView.log("NetworkParser#getNetworks(); Root shell was not available!");
+			WiFiKeyView.verboseLog(NetworkParser.class, "getNetworks()", "Root shell was not available!");
 		}
 		
 		return networks;
@@ -95,14 +95,10 @@ public class NetworkParser {
 							network.put(SupplicantKey.valueOf(entry[0]), entry[1].replace("\"", ""));
 							
 						} catch (IllegalArgumentException iae) {
-							if (WiFiKeyView.isDebugging()) {
-								WiFiKeyView.log("NetworkParser#parse(List<String>); Unknown key in supplicant file: " + entry[0]);
-							}
+							WiFiKeyView.verboseLog(NetworkParser.class, "parse(List<String>)", "Unknown key in supplicant file: " + entry[0]);
 						}
 					} else {
-						if (WiFiKeyView.isDebugging()) {
-							WiFiKeyView.log("NetworkParser#parse(List<String>); Unknown entry in supplicant file: " + string);
-						}
+						WiFiKeyView.verboseLog(NetworkParser.class, "parse(List<String>)", "Unknown entry in supplicant file: " + string);
 					}
 				}
 			}
@@ -116,6 +112,14 @@ public class NetworkParser {
 	 */
 	public static class Network extends HashMap<SupplicantKey, String> {
 		private static final long serialVersionUID = 0L;
+		
+		public boolean equals(Object object) {
+			return ((object instanceof String) && (equals((String) object)));
+		}
+		
+		public boolean equals(String ssid) {
+			return (get(SupplicantKey.SSID).equals(ssid));
+		}
 	}
 	
 	/**
