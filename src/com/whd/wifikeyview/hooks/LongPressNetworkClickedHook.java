@@ -35,15 +35,22 @@ public class LongPressNetworkClickedHook extends XC_MethodHook {
 
 		// We only want to do something on our own menu item
 		if ( menuItem.getItemId() == MENU_ID_SHOWPASSWORD) {
+			WiFiKeyView.verboseLog(this, "afterHookedMethod(MethodHookParam)", "Context menu show password clicked");
 			
 			// Output the class of the object
 			if (WiFiKeyView.isDebugging()) {
-				Object   objectWifiSettings = param.thisObject;
-				Class<?> classWifiSettings  = objectWifiSettings.getClass();
-				while (classWifiSettings.getSuperclass() != null) {
-					WiFiKeyView.log("WiFiSettings subclass: " + classWifiSettings.getCanonicalName());
-					classWifiSettings = classWifiSettings.getSuperclass();
+				Class<?> clazz = param.thisObject.getClass();
+				StringBuilder sb = new StringBuilder();
+				
+				sb.append("WifiSettings subclasses:\n");
+				while (clazz != null) {
+					sb.append("\t" + clazz.getCanonicalName());
+					for (Class<?> theInterface : clazz.getInterfaces()) {
+						sb.append("\t\t" + theInterface);
+					}
 				}
+				
+				WiFiKeyView.verboseLog(this, "afterHookedMethod(MethodHookParam)", sb.toString());
 			}
 			
 			// The selected position in the network list
@@ -72,7 +79,7 @@ public class LongPressNetworkClickedHook extends XC_MethodHook {
 			if (WiFiKeyView.isDebugging()) {
 				Class<?> classObject = object.getClass();
 				while (classObject.getSuperclass() != null) {
-					WiFiKeyView.log("ListView item subclass: " + classObject.getCanonicalName());
+					WiFiKeyView.verboseLog(this, "afterHookedMethod(MethodHookParam)", "ListView item subclass: " + classObject.getCanonicalName());
 					classObject = classObject.getSuperclass();
 				}
 			}
@@ -93,16 +100,16 @@ public class LongPressNetworkClickedHook extends XC_MethodHook {
 						WifiConfiguration config = (WifiConfiguration) result;
 						ssid = config.SSID;
 					} else {
-						WiFiKeyView.log("Result from reflection call object.getConfig() is null!");
+						WiFiKeyView.verboseLog(this, "afterHookedMethod(MethodHookParam)", "Result from reflection call object.getConfig() is null!");
 					}
 				} else {
-					WiFiKeyView.log("Reflection call object.getConfig() failed!");
+					WiFiKeyView.verboseLog(this, "afterHookedMethod(MethodHookParam)", "Reflection call object.getConfig() failed!");
 				}
 			}
 			
 			// When debugging, show we clicked the item, and the ssid
 			if (WiFiKeyView.isDebugging()) {
-				WiFiKeyView.log("MENU_ID_SHOWPASSWORD clicked!! SSID: " + ssid);
+				WiFiKeyView.verboseLog(this, "afterHookedMethod(MethodHookParam)", "MENU_ID_SHOWPASSWORD clicked!! SSID: " + ssid);
 			}
 			
 			// Execute the task with given ssid, and return to ShowPasswordDialog
@@ -122,12 +129,12 @@ public class LongPressNetworkClickedHook extends XC_MethodHook {
 				accessPointClass = XposedHelpers.findClass("AccessPoint", null);
 			
 				if (WiFiKeyView.isDebugging()) {
-					WiFiKeyView.log("AccessPoint class was found");
+					WiFiKeyView.verboseLog(this, "getAccessPointClass(MethodHookParam)", "AccessPoint class was found");
 				}
 			} catch (ClassNotFoundError cnfe) {
 				// Do not do anything, we will not use it if the reference is null
 				if (WiFiKeyView.isDebugging()) {
-					WiFiKeyView.log("AccessPoint class was not found");
+					WiFiKeyView.verboseLog(this, "getAccessPointClass(MethodHookParam)", "AccessPoint class was not found");
 				}
 			}
 		}

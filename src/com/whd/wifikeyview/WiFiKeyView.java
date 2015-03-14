@@ -21,6 +21,7 @@ import static de.robv.android.xposed.XposedHelpers.callMethod;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
@@ -54,9 +55,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
  */
 public class WiFiKeyView implements IXposedHookZygoteInit, IXposedHookLoadPackage  {
 	
-	// Debugging
-	private static final String  TAG = 
-			"WHD - WiFiKeyView || ";
+	public static final boolean verbose = true;
 	
 	// What to hook
 	private static final String PACKAGE_SETTINGS = 
@@ -69,6 +68,8 @@ public class WiFiKeyView implements IXposedHookZygoteInit, IXposedHookLoadPackag
 	
 	@Override
 	public void initZygote(StartupParam param) throws Throwable {
+		verboseLog(this, "initZygote(StartupParam)", "WiFiKeyView starting...");
+		
 		mPreferences = new XSharedPreferences(WiFiKeyView.class.getPackage().getName());
 		mPreferences.makeWorldReadable();
 	}
@@ -76,6 +77,8 @@ public class WiFiKeyView implements IXposedHookZygoteInit, IXposedHookLoadPackag
 	@Override
 	public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 		if (!lpparam.packageName.equals(PACKAGE_SETTINGS)) return; // Settings package
+		
+		verboseLog(this, "handleLoadPackage(LoadPackageParam)", "WiFiKeyView is hooking methods...");
 		
 		// Reference to the class we want to hook
 		final Class<?> SettingsClazz = XposedHelpers.findClass(CLASS_WIFISETTINGS, lpparam.classLoader);
@@ -97,14 +100,14 @@ public class WiFiKeyView implements IXposedHookZygoteInit, IXposedHookLoadPackag
 		);
     }
 	
-	/**
-	 * Log to the XposedBridge
-	 * 
-	 * @param msg
-	 * 		The text to log (TAG will be added automatically)
-	 */
-	public static void log(String msg) {
-		XposedBridge.log(TAG + msg);
+	public static void verboseLog(Object who, String methodAndParams, String what) {
+		if (verbose) {
+			String packageAndClass = (who instanceof Class) ? ((Class<?>) who).getCanonicalName() : who.getClass().getCanonicalName();
+			String tag = "WiFiKeyView (" + packageAndClass + "#" + methodAndParams + ")";
+			
+			Log.v(tag, what);
+			XposedBridge.log(tag + " " + what);
+		}
 	}
 	
 	/**
@@ -149,5 +152,9 @@ public class WiFiKeyView implements IXposedHookZygoteInit, IXposedHookLoadPackag
 		}
         
 		return ret;
+	}
+	
+	public static XSharedPreferences getSharedPreferences() {
+		return mPreferences;
 	}
 }

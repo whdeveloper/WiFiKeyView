@@ -7,6 +7,7 @@ import com.whd.wifikeyview.network.NetworkParser.Network;
 import com.whd.wifikeyview.network.NetworkParser.SupplicantKey;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * @author WHD
@@ -42,15 +43,28 @@ public class NetworkParseTask extends AsyncTask<String, Void, Network> {
 		Network ret = null;
 		
 		List<Network> networks = NetworkParser.getNetworks();
+		
+		int index = networks.indexOf(params[0]);
+		if (index == -1) {
+			Log.e("TAG", "Network " + params[0] + " could not be found!");
+		} else {
+			String pass = networks.get(index).get(SupplicantKey.PASSWORD);
+			Log.e("TAG", "Network " + params[0] + " found! Password: " + pass);
+		}
+		
 		for (Network network : networks) {
 			if (WiFiKeyView.isDebugging()) {
-				WiFiKeyView.log("" + network.get(SupplicantKey.SSID) + " =?= " + params[0]);
+				WiFiKeyView.verboseLog(this, "doInBackground(String...)", "" + network.get(SupplicantKey.SSID) + " =?= " + params[0]);
 			}
 			
-			if (network.get(SupplicantKey.SSID).equals(params[0])) {
+			if (network.equals(params[0])) {
 				ret = network;
 				break;
 			}
+		}
+		
+		if ( (ret == null) && WiFiKeyView.isDebugging()) {
+			WiFiKeyView.verboseLog(this, "doInBackground(String...)", "The network '" + params[0] + "' could not be found");
 		}
 		
 		return ret;

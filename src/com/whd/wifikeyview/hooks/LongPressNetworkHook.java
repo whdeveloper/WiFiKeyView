@@ -28,6 +28,7 @@ public class LongPressNetworkHook extends XC_MethodHook {
 	
 	@Override
 	public void afterHookedMethod(MethodHookParam param) {
+		WiFiKeyView.verboseLog(this, "afterHookedMethod(MethodHookParam)", "Injecting context menu item...");
 		
 		// Get the context menu from the arguments
 		ContextMenu menu = null;
@@ -41,7 +42,7 @@ public class LongPressNetworkHook extends XC_MethodHook {
 		
 		// Without the menu, there is nothing to do
 		if (menu == null) {
-			WiFiKeyView.log("LongPressNetworkHook#afterHookedMethod(MethodHookParam); ContextMenu not found.");
+			WiFiKeyView.verboseLog(this, "afterHookedMethod(MethodHookParam)", "Could not find ContextMenu in parameter -> null!");
 			return;
 		}
 		
@@ -65,7 +66,7 @@ public class LongPressNetworkHook extends XC_MethodHook {
 			);
 			
 			if (debug) {
-				WiFiKeyView.log("Show password added to Context menu.");
+				WiFiKeyView.verboseLog(this, "afterHookedMethod(MethodHookParam)", "Show password added to Context menu.");
 			}
 		}
 	}
