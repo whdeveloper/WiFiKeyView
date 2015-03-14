@@ -1,5 +1,9 @@
 <resources>
     
+    <!-- BEGIN do not edit these string (same for all languages) -->
+    <string name="empty"></string>
+    <!-- END the rest will be different through languages  -->
+    
     <!-- General strings -->
     <string name="app_name">WiFiKeyView</string>
     <string name="app_description">View your WiFi passwords in settings</string>
@@ -14,17 +18,26 @@
     <string name="preferences_debug_title">Debug</string>
     <string name="preferences_debug_summary">Control the debug settings</string>
     	<string name="preferences_debug_global">Debugging</string>
+    	
     	<string name="preferences_debug_enabled_title">Debugging enabled</string>
     	<string name="preferences_debug_enabled_summary">This will enable/disable all debugging methods</string>
     
+    	<string name="preferences_launcher_icon_enabled_title">Hide launcher icon</string>
+    	<string name="preferences_launcher_icon_enabled_summary">This will enable/disable the launcher icon</string>
+    	
     <string name="preferences_showpassword_title">Password</string>
     <string name="preferences_showpassword_summary">Control the view of the passwords</string>
 	    <string name="preferences_showpassword_global">Direct copy</string>
+	    
     	<string name="preferences_showpassword_directcopypsk_title">Copy pre shared key</string>
     	<string name="preferences_showpassword_directcopypsk_summary">Copy the pre shared key directly to the clip board</string>
+    	
     	<string name="preferences_showpassword_directcopypassword_title">Copy password</string>
     	<string name="preferences_showpassword_directcopypassword_summary">Copy the password directly to the clip board</string>
-    
+    	
+    	<string name="preferences_showpassword_dialogtextcolor_title">Text color</string>
+    	<string name="preferences_showpassword_dialogtextcolor_summary">Change the text color from the password dialog</string>
+    	
     <!-- GetNetworkPasswordTask -->
     <string name="getnetworkpassword_progressdialog_message">Getting password&#8230;</string>
     
@@ -53,5 +66,20 @@
     <string name="supplicant_key_private_key_password">Private key password</string>
     
     <string name="password_copied">Password copied to clipboard</string>
+	
+	<!-- Color Picker -->
+    <string name="dialog_color_picker">Color Picker</string>
+    <string name="press_color_to_apply">Press on Color to apply</string>
+
+    <!-- Preferences -->
+    <string name="pref_category">Category</string>
+    <string name="color1_title">Color 1</string>
+    <string name="color1_summary">black color by default, set by reference</string>
+    <string name="color2_title">Color 2</string>
+    <string name="color2_summary">not persistent color\nalpha slider added via code</string>
+    <string name="color3_title">Color 3</string>
+    <string name="color3_summary">picker with alpha slider</string>
+    <string name="color4_title">Color 4</string>
+    <string name="color4_summary">color set with HEX code in xml</string>
     
 </resources>
