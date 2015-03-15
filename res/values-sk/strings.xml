@@ -2,19 +2,26 @@
 
     <string name="app_name">WiFiKeyView</string>
     <string name="app_description">Zobraziť vaše Wi-Fi heslá v Nastaveniach</string>
-    <string name="show_password">Zobraziť heslo</string>
-    <string name="password">Heslo: </string>
     <string name="copy">Kopírovať</string>
-    <string name="share">Zdieľať</string>
     <string name="password_copied">Heslo bolo skopírované do schránky</string>
-    <string name="share_password_to">Zdieľať heslo pomocou&#8230;</string>
-    <string name="network_no_password">Sieť nemá žiadne heslo.</string>
+    <string name="cancel">Zrušiť</string>
+    <string name="menu_option_show_password"Zobraziť heslo</string>
     <string name="preferences_debug_title">Ladenie</string>
     <string name="preferences_debug_summary">Ovládať nastavenia ladenia</string>
     <string name="preferences_debug_global">Ladenie</string>
     <string name="preferences_debug_enabled_title">Povoliť ladenie</string>
     <string name="preferences_debug_enabled_summary">Povoliť/zakázať všetky metódy ladenia</string>
+    <string name="preferences_launcher_icon_enabled_title">Skryť ikonu v spúšťači</string>
+    <string name="preferences_launcher_icon_enabled_summary">Povoliť/zakázať ikonu v spúšťači</string>   
     <string name="preferences_showpassword_global">Heslo</string>
+    <string name="preferences_showpassword_summary">Ovládať zobrazenie hesiel</string>
+    <string name="preferences_showpassword_global">Priame kopírovanie</string>
+    <string name="preferences_showpassword_directcopypsk_title">Kopírovať vopred zdieľaný kľúč</string>
+    <string name="preferences_showpassword_directcopypsk_summary">Kopírovať vopred zdieľaný kľúč priamo do schránky</string>
+    <string name="preferences_showpassword_directcopypassword_title">Kopírovať heslo</string>
+    <string name="preferences_showpassword_directcopypassword_summary">Kopírovať heslo priamo do schránky</string>
+    <string name="preferences_showpassword_dialogtextcolor_title">Farba textu</string>
+    <string name="preferences_showpassword_dialogtextcolor_summary">Zmeniť farbu textu v okne s heslom</string>
     <string name="getnetworkpassword_progressdialog_message">Získavanie hesla&#8230;</string>
     <string name="supplicant_key_ssid">SSID</string>
     <string name="supplicant_key_bssid">BSSID</string>
@@ -35,8 +42,19 @@
     <string name="supplicant_key_priority">Priorita</string>
     <string name="supplicant_key_pac_file">PAC súbor</string>
     <string name="supplicant_key_ca_cert">Certifikát CA</string>
-    <string name="supplicant_key_client_cert">Client cert</string>
+    <string name="supplicant_key_client_cert">Certifikát klienta</string>
     <string name="supplicant_key_private_key">Súkromný kľúč</string>
     <string name="supplicant_key_private_key_password">Heslo súkromného kľúča</string>
+    <string name="dialog_color_picker">Výber farby</string>
+    <string name="press_color_to_apply">Stlačte farbu pre použitie</string>
+    <string name="pref_category">Kategória</string>
+    <string name="color1_title">Farba 1</string>
+    <string name="color1_summary">Čierna farba je predvolená, nastavené referenciou</string>
+    <string name="color2_title">Farba 2</string>
+    <string name="color2_summary">Dočasná farba bez alfa posuvníka</string>
+    <string name="color3_title">Farba 3</string>
+    <string name="color3_summary">Výber farby s alfa posuvníkom</string>
+    <string name="color4_title">Farba 4</string>
+    <string name="color4_summary">Farba je nastavená HEX kódom farby v xml</string>
 
 </resources>
