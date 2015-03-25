@@ -80,25 +80,19 @@ public class NetworkParser {
 					networks.add(network);
 					network = null;
 				} else {
-					// Read the data
-					String[] entry = string.split("=");
+					// Find the equal sign for split of key and value
+					int equalsChar = string.indexOf('=');
 					
-					// An entry always has it's key and a value
-					if (entry.length == 2) {
-						try {
-							// Trim spaces to match items in NetworkKeys
-							// Convert to uppercase to match constants in NetworkKeys
-							entry[0] = entry[0].trim().toUpperCase();
-							
-							// Put the current key-value in the network holder,
-							// or throw IllegalArgumentException if key does not exist
-							network.put(SupplicantKey.valueOf(entry[0]), entry[1].replace("\"", ""));
-							
-						} catch (IllegalArgumentException iae) {
-							WiFiKeyView.verboseLog(NetworkParser.class, "parse(List<String>)", "Unknown key in supplicant file: " + entry[0]);
-						}
-					} else {
-						WiFiKeyView.verboseLog(NetworkParser.class, "parse(List<String>)", "Unknown entry in supplicant file: " + string);
+					// Find key and value
+					String key = new String(string.substring(0, equalsChar).toUpperCase().trim());
+					String value = new String(string.substring(equalsChar+1).replace("\"", "").trim());
+					
+					try {
+						// Put the current key-value in the network holder,
+						// or throw IllegalArgumentException if key does not exist
+						network.put(SupplicantKey.valueOf(key), value);
+					} catch (IllegalArgumentException iae) {
+						WiFiKeyView.verboseLog(NetworkParser.class, "parse(List<String>)", "Unknown key in supplicant file: " + key);
 					}
 				}
 			}
