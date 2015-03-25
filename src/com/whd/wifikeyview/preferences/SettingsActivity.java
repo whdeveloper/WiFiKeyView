@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.whd.wifikeyview.R;
 import com.whd.wifikeyview.preferences.fragments.DebugPreferences;
+import com.whd.wifikeyview.preferences.fragments.ExtraPreferences;
 import com.whd.wifikeyview.preferences.fragments.ShowPasswordPreferences;
 
 import android.os.Bundle;
@@ -24,7 +25,8 @@ public class SettingsActivity extends PreferenceActivity {
 	protected boolean isValidFragment(String fragmentName) {
 		return (
 				DebugPreferences.class.getName().equals(fragmentName) 			||
-				ShowPasswordPreferences.class.getName().equals(fragmentName)
+				ShowPasswordPreferences.class.getName().equals(fragmentName)	||
+				ExtraPreferences.class.getName().equals(fragmentName)
 		);
 	}
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <PreferenceCategory 
+        android:title="@string/preferences_extra_title">
+        
+        <CheckBoxPreference 
+            android:title="@string/preferences_extra_modifydialog_password_title"
+            android:summary="@string/preferences_extra_modifydialog_password_summary"
+            android:key="extra_modify_dialog_password" />
+        
+        <CheckBoxPreference 
+            android:title="@string/preferences_extra_info_dialog_password_title"
+            android:summary="@string/preferences_extra_info_dialog_password_summary"
+            android:key="extra_info_dialog_password" />
+        
+    </PreferenceCategory>
+    
+</PreferenceScreen>
