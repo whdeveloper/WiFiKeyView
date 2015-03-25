@@ -12,6 +12,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
@@ -54,6 +55,13 @@ public class ShowPassword implements NetworkListener {
 		
 		// Read all network entries and add those with data
 		for (SupplicantKey key : SupplicantKey.values()) {
+			
+			// The SSID should be in the title and not in our table
+			if (key == SupplicantKey.SSID) {
+				continue;
+			}
+			
+			// Get the value and generate an TableRow if needed
 			String value = network.get(key);
 			if ( (value != null) && (!value.equals("")) ) {
 				showPasswordTable.addView(
@@ -77,7 +85,7 @@ public class ShowPassword implements NetworkListener {
 		}
 		
 		// Show results to the user
-		AlertDialog dialog = new AlertDialog.Builder(activity)
+		AlertDialog dialog = new AlertDialog.Builder(activity, android.R.style.Theme_Holo_Dialog)
 				.setTitle(network.get(SupplicantKey.SSID))
 				.setView(showPasswordTable)
 				.setPositiveButton(mContext.getString(R.string.copy), new OnClickListener() {
@@ -103,6 +111,7 @@ public class ShowPassword implements NetworkListener {
 					}
 				})
 				.create();
+		
 		dialog.show();
 	}
 	
