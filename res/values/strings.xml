@@ -25,7 +25,7 @@
     	<string name="preferences_launcher_icon_enabled_title">Hide launcher icon</string>
     	<string name="preferences_launcher_icon_enabled_summary">This will enable/disable the launcher icon</string>
     	
-    <string name="preferences_showpassword_title">Password</string>
+    <string name="preferences_showpassword_title">View password</string>
     <string name="preferences_showpassword_summary">Control the view of the passwords</string>
 	    <string name="preferences_showpassword_global">Direct copy</string>
 	    
@@ -37,6 +37,14 @@
     	
     	<string name="preferences_showpassword_dialogtextcolor_title">Text color</string>
     	<string name="preferences_showpassword_dialogtextcolor_summary">Change the text color from the password dialog</string>
+    	
+    <string name="preferences_extra_title">Extras</string>
+    <string name="preferences_extra_summary">Experimental functions</string>
+    	<string name="preferences_extra_modifydialog_password_title">Modify network password</string>
+    	<string name="preferences_extra_modifydialog_password_summary">Enter the password in the password dialog</string>
+    	
+    	<string name="preferences_extra_info_dialog_password_title">Info dialog password</string>
+    	<string name="preferences_extra_info_dialog_password_summary">Show the password in the network info dialog</string>
     	
     <!-- GetNetworkPasswordTask -->
     <string name="getnetworkpassword_progressdialog_message">Getting password&#8230;</string>
