@@ -9,5 +9,40 @@
     <string name="password_copied">Пароль скопирован в буфер обмена</string>
     <string name="share_password_to">Отправить пароль&#8230;</string>
     <string name="network_no_password">Сеть без пароля.</string>
-
+    <!-- Preferences -->
+    <string name="preferences_debug_title">Debug</string>
+    <string name="preferences_debug_summary">Control the debug settings</string>
+    
+    <string name="preferences_debug_global">Отладка</string>
+    <string name="preferences_debug_enabled_title">Отладка включена</string>
+    <string name="preferences_debug_enabled_summary">Это включит/отключил отладку</string>
+    
+    <string name="preferences_showpassword_global">Пароль</string>
+    
+    <!-- GetNetworkPasswordTask -->
+    <string name="getnetworkpassword_progressdialog_message">Получение пароля&#8230;</string>
+    
+    <!-- ShowPassword -->
+    <string name="supplicant_key_ssid">SSID</string>
+    <string name="supplicant_key_bssid">BSSID</string>
+    <string name="supplicant_key_wep_key0">Wep key 0</string>
+    <string name="supplicant_key_wep_key1">Wep key 1</string>
+    <string name="supplicant_key_wep_key2">Wep key 2</string>
+    <string name="supplicant_key_wep_key3">Wep key 3</string>
+    <string name="supplicant_key_psk">Pre shared key</string>
+    <string name="supplicant_key_password">Пароль</string>
+    <string name="supplicant_key_key_mgmt">Управление паролем</string>
+    <string name="supplicant_key_group">Группа</string>
+    <string name="supplicant_key_auth_alg">Алгоритм аутентификации</string>
+    <string name="supplicant_key_eap">EAP</string>
+    <string name="supplicant_key_identity">Identity</string>
+    <string name="supplicant_key_anonymous_identity">Анонимно</string>
+    <string name="supplicant_key_phase1">Phase 1</string>
+    <string name="supplicant_key_phase2">Phase 2</string>
+    <string name="supplicant_key_priority">Приоритет</string>
+    <string name="supplicant_key_pac_file">Pac файл</string>
+    <string name="supplicant_key_ca_cert">Ca сертификат</string>
+    <string name="supplicant_key_client_cert">Сертификат клиента</string>
+    <string name="supplicant_key_private_key">Прокатный ключ</string>
+    <string name="supplicant_key_private_key_password">Пароль прокатного ключа</string>
 </resources>
